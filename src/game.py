@@ -3,8 +3,8 @@ from pathlib import Path
 import pygame
 
 from src.events_listener import EventsListener
-from src.objects.crosshair import Crosshair
-from src.objects.player import Player
+from src.entities.crosshair import Crosshair
+from src.entities.player import Player
 
 root_dir = Path.cwd().parent
 doc_dir = root_dir / 'doc/'
@@ -31,21 +31,23 @@ class Game:
 
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption(self.game_title)
+        game_icon = pygame.image.load(str(res_dir / 'icon.png')).convert()
+        pygame.display.set_icon(game_icon)
 
-        # Init game objects
+        # Init game entities
         self.crosshair = Crosshair(self.screen_width / 2, self.screen_height / 2, 35, 35, res_dir)
         self.player = Player(self.screen_width / 2, self.screen_height / 2, 60, 60, speed=5, player_res=player_res)
 
         self.events_listener = EventsListener(self)
 
-        # Start game loop
-        self.start()
+        # Run game loop
+        self.run()
 
-    def start(self):
+    def run(self):
         while True:
+            delta_time = self.clock.tick(self.fps) / 1000
             self.update()
             self.draw()
-            self.clock.tick(self.fps)
 
     def update(self):
         self.events_listener.update()

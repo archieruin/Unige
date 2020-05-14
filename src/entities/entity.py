@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import pygame
 
 
-class GameObject(ABC):
+class Entity(ABC):
 
     def __init__(self, x, y, width, height, speed=5):
         self._x = x
@@ -48,7 +48,7 @@ class GameObject(ABC):
 
     @staticmethod
     def load_i_hflip(path):
-        return GameObject.h_flip(pygame.image.load(path))
+        return Entity.h_flip(pygame.image.load(path))
 
     @staticmethod
     def h_flip(img):

@@ -1,9 +1,9 @@
 import pygame
 
-from .game_object import GameObject
+from .entity import Entity
 
 
-class Player(GameObject):
+class Player(Entity):
     
     def __init__(self, x, y, width, height, speed=5, player_res=None):
         super().__init__(x, y, width, height, speed)

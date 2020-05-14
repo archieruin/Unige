@@ -1,8 +1,8 @@
 import pygame
 from pygame.constants import *
 
-from src.objects.crosshair import Crosshair
-from src.objects.player import Player
+from src.entities.crosshair import Crosshair
+from src.entities.player import Player
 
 
 class EventsListener(object):
@@ -35,6 +35,11 @@ class EventsListener(object):
             self.__player.watch_right = False
 
     def __update_player_moving(self, keys):
+        player_x = self.__player.get_pos()[0]
+        player_y = self.__player.get_pos()[1]
+        player_width = self.__player.get_width()
+        player_height = self.__player.get_height()
+
         if keys[K_w]:
             self.__player.move_top = True
             self.__player.move_down = False

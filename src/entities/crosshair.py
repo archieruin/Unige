@@ -1,9 +1,9 @@
 import pygame
 
-from .game_object import GameObject
+from .entity import Entity
 
 
-class Crosshair(GameObject):
+class Crosshair(Entity):
 
     def __init__(self, x, y, width, height, crosshair_dir):
         super().__init__(x, y, width, height)
