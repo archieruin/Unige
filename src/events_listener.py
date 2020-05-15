@@ -1,23 +1,20 @@
 import pygame
 from pygame.constants import *
 
+from src import settings
 from src.entities.crosshair import Crosshair
 from src.entities.player import Player
 
 
 class EventsListener(object):
 
-    def __init__(self, game):
-        self.__screen_width = game.screen_width
-        self.__screen_height = game.screen_height
-        self.__player: Player = game.player
-        self.__crosshair: Crosshair = game.crosshair
+    def __init__(self, player):
+        self.__screen_width = settings.SCREEN_WIDTH
+        self.__screen_height = settings.SCREEN_HEIGHT
+        self.__player: Player = player
+        self.__crosshair: Crosshair = settings.crosshair
 
     def update(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
 
         keys = pygame.key.get_pressed()
         self.__update_player_moving(keys)

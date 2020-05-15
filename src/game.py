@@ -1,17 +1,8 @@
-from pathlib import Path
-
 import pygame
 
-from src.events_listener import EventsListener
-from src.entities.crosshair import Crosshair
-from src.entities.player import Player
-
-root_dir = Path.cwd().parent
-doc_dir = root_dir / 'doc/'
-src_dir = root_dir / 'src/'
-res_dir = root_dir / 'res/'
-
-player_res = res_dir / 'player'
+from src import settings
+from src.states.game_manager import GameStatesManager
+from src.states.game_states import GameStates
 
 
 class Game:
@@ -20,45 +11,43 @@ class Game:
     def __init__(self):
         pygame.init()
         pygame.mouse.set_visible(False)
-        self.game_title = 'Unige'
-        self.fps = 60
-
-        self.screen_width = 840
-        self.screen_height = 650
         self.screen_clear_color = (52, 50, 50)
-
         self.clock = pygame.time.Clock()
+        self.screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
 
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        pygame.display.set_caption(self.game_title)
-        game_icon = pygame.image.load(str(res_dir / 'icon.png')).convert()
+        pygame.display.set_caption(settings.GAME_TITLE)
+        game_icon = pygame.image.load(str(settings.ui_res / 'icon.png')).convert()
         pygame.display.set_icon(game_icon)
 
-        # Init game entities
-        self.crosshair = Crosshair(self.screen_width / 2, self.screen_height / 2, 35, 35, res_dir)
-        self.player = Player(self.screen_width / 2, self.screen_height / 2, 60, 60, speed=5, player_res=player_res)
-
-        self.events_listener = EventsListener(self)
+        # Inti game states manager
+        self.game_states_manager = GameStatesManager(GameStates.MAIN_MENU)
 
         # Run game loop
         self.run()
 
     def run(self):
         while True:
-            delta_time = self.clock.tick(self.fps) / 1000
-            self.update()
+            dt = self.clock.tick(settings.FPS) / 1000
+            self.update(dt)
             self.draw()
-
-    def update(self):
-        self.events_listener.update()
-        self.crosshair.update()
-        self.player.update()
 
     def draw(self):
         pygame.display.update()
         self.screen.fill(self.screen_clear_color)
-        self.player.draw(self.screen)
-        self.crosshair.draw(self.screen)
+
+        self.game_states_manager.draw(self.screen)
+
+    def update(self, dt):
+        self.handle_events()
+        self.game_states_manager.update(dt)
+
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        self.game_states_manager.handle_events()
 
 
 if __name__ == '__main__':

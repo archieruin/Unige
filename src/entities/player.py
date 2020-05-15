@@ -1,5 +1,3 @@
-import pygame
-
 from .entity import Entity
 
 
@@ -45,17 +43,7 @@ class Player(Entity):
         if self.__current_frame >= len(self.__current_anim):
             self.__current_frame = 0
 
-        if self.move_top:
-            self._y -= self._speed
-
-        elif self.move_down:
-            self._y += self._speed
-
-        if self.move_left:
-            self._x -= self._speed
-
-        elif self.move_right:
-            self._x += self._speed
+        self.__move()
 
         if not self.move_top and not self.move_down and not self.move_left and not self.move_right:
             self.__current_anim = self.__idle_anim
@@ -69,3 +57,16 @@ class Player(Entity):
 
     def draw(self, screen):
         screen.blit(self.__image, (self.get_center()[0], self.get_center()[1]))
+
+    def __move(self):
+        if self.move_top:
+            self._y -= self._speed
+
+        elif self.move_down:
+            self._y += self._speed
+
+        if self.move_left:
+            self._x -= self._speed
+
+        elif self.move_right:
+            self._x += self._speed

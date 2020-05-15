@@ -14,11 +14,11 @@ class Entity(ABC):
 
     @abstractmethod
     def update(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def draw(self, screen):
-        pass
+        raise NotImplementedError
 
     def get_center(self):
         return self._x - self._width / 2, self._y - self._height / 2
