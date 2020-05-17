@@ -4,7 +4,8 @@ from .entity import Entity
 class Player(Entity):
     
     def __init__(self, x, y, width, height, speed=5, player_res=None):
-        super().__init__(x, y, width, height, speed)
+        super().__init__(x, y, width, height)
+        self.__speed = speed
         self.__player_res = player_res
 
         self.watch_left = False
@@ -34,39 +35,41 @@ class Player(Entity):
             self.scale(self.load(str(self.__player_res / 'knight_run_anim_f5.png')), width, height)
         ]
 
-        self.__current_anim = self.__idle_anim
-        self.__current_frame = 0
-        self.__image = self.__current_anim[int(self.__current_frame)]
+        self.__anim = self.__idle_anim
+        self.__frame = 0
+        self.__image = self.__anim[int(self.__frame)]
 
     def update(self):
-        self.__current_frame += 0.2
-        if self.__current_frame >= len(self.__current_anim):
-            self.__current_frame = 0
+        self.__frame += 0.2
+        if self.__frame >= len(self.__anim):
+            self.__frame = 0
 
         self.__move()
+        self.__watch()
 
         if not self.move_top and not self.move_down and not self.move_left and not self.move_right:
-            self.__current_anim = self.__idle_anim
+            self.__anim = self.__idle_anim
         else:
-            self.__current_anim = self.__move_anim
-
-        if self.watch_left:
-            self.__image = self.h_flip(self.__current_anim[int(self.__current_frame)])
-        else:
-            self.__image = self.__current_anim[int(self.__current_frame)]
+            self.__anim = self.__move_anim
 
     def draw(self, screen):
         screen.blit(self.__image, (self.get_center()[0], self.get_center()[1]))
 
+    def __watch(self):
+        if self.watch_left:
+            self.__image = self.h_flip(self.__anim[int(self.__frame)])
+        else:
+            self.__image = self.__anim[int(self.__frame)]
+
     def __move(self):
         if self.move_top:
-            self._y -= self._speed
+            self._y -= self.__speed
 
         elif self.move_down:
-            self._y += self._speed
+            self._y += self.__speed
 
         if self.move_left:
-            self._x -= self._speed
+            self._x -= self.__speed
 
         elif self.move_right:
-            self._x += self._speed
+            self._x += self.__speed

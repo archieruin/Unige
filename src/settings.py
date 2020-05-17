@@ -6,6 +6,7 @@ src_dir = root_dir / 'src/'
 res_dir = root_dir / 'res/'
 
 ui_res = res_dir / 'ui/'
+fonts_res = res_dir / 'fonts/'
 player_res = res_dir / 'player/'
 
 GAME_TITLE = 'Unige'

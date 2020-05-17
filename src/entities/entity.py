@@ -5,12 +5,11 @@ import pygame
 
 class Entity(ABC):
 
-    def __init__(self, x, y, width, height, speed=5):
+    def __init__(self, x, y, width, height):
         self._x = x
         self._y = y
         self._width = width
         self._height = height
-        self._speed = speed
 
     @abstractmethod
     def update(self):
@@ -19,9 +18,6 @@ class Entity(ABC):
     @abstractmethod
     def draw(self, screen):
         raise NotImplementedError
-
-    def get_center(self):
-        return self._x - self._width / 2, self._y - self._height / 2
 
     def get_pos(self):
         return self._x, self._y
@@ -41,6 +37,9 @@ class Entity(ABC):
 
     def set_height(self, height):
         self._height = height
+
+    def get_center(self):
+        return self._x - self._width / 2, self._y - self._height / 2
 
     @staticmethod
     def load(path):
