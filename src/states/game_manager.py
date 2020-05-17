@@ -8,7 +8,7 @@ from src.states.game_states import GameStates
 class GameStatesManager:
     def __init__(self, state: GameStates):
         self.__state = state
-        self.scene = self.get_scene(self.__state)
+        self.scene = self.set_state(self.__state)
 
     def update(self, dt):
         self.scene.update(dt)
@@ -18,6 +18,9 @@ class GameStatesManager:
 
     def handle_events(self):
         self.scene.handle_events()
+
+    def set_state(self, state: GameStates) -> Scene:
+        return self.get_scene(state)
 
     def get_scene(self, state: GameStates):
         if state == GameStates.MAIN_MENU:
@@ -29,7 +32,3 @@ class GameStatesManager:
         elif state == GameStates.GAME_OVER:
             self.__state = GameStates.GAME_OVER
             return GameOverScene()
-
-    # def set_scene(self, scene: Scene):
-    #     self.scene = scene
-    #     return self.scene
