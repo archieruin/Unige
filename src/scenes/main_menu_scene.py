@@ -105,7 +105,7 @@ class MainMenuScene(Scene):
             if self.__close_effect_alpha > 255 + 300:
                 self._gsm.set_state(GameStates.PLAY)
 
-    def handle_events(self):
+    def handle_events(self, events):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] == 1:
             if not self.__button_pressed:

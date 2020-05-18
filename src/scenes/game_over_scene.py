@@ -12,5 +12,5 @@ class GameOverScene(Scene):
     def update(self, dt):
         pass
 
-    def handle_events(self):
+    def handle_events(self, events):
         pass

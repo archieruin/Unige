@@ -42,11 +42,13 @@ class Game:
         self.game_states_manager.update(dt)
 
     def handle_events(self):
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-        self.game_states_manager.handle_events()
+        self.game_states_manager.handle_events(events)
+
 
 
 if __name__ == '__main__':

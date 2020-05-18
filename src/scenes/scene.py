@@ -12,5 +12,5 @@ class Scene(object):
     def update(self, dt):
         raise NotImplementedError
 
-    def handle_events(self):
+    def handle_events(self, events):
         raise NotImplementedError

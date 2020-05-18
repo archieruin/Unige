@@ -16,8 +16,8 @@ class GameStatesManager:
     def draw(self, screen):
         self.__scene.draw(screen)
 
-    def handle_events(self):
-        self.__scene.handle_events()
+    def handle_events(self, events):
+        self.__scene.handle_events(events)
 
     def set_state(self, state: GameStates):
         self.__scene = self.__get_scene(state)
