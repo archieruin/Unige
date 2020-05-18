@@ -21,6 +21,7 @@ class Game:
 
         # Inti game states manager
         self.game_states_manager = GameStatesManager(GameStates.MAIN_MENU)
+        self.__pause = False
 
         # Run game loop
         self.run()
@@ -34,7 +35,6 @@ class Game:
     def draw(self):
         pygame.display.update()
         self.screen.fill(self.screen_clear_color)
-
         self.game_states_manager.draw(self.screen)
 
     def update(self, dt):
@@ -46,7 +46,6 @@ class Game:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-
         self.game_states_manager.handle_events()
 
 

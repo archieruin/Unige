@@ -8,27 +8,31 @@ from src.states.game_states import GameStates
 class GameStatesManager:
     def __init__(self, state: GameStates):
         self.__state = state
-        self.scene = self.set_state(self.__state)
+        self.__scene = self.set_state(self.__state)
 
     def update(self, dt):
-        self.scene.update(dt)
+        self.__scene.update(dt)
 
     def draw(self, screen):
-        self.scene.draw(screen)
+        self.__scene.draw(screen)
 
     def handle_events(self):
-        self.scene.handle_events()
+        self.__scene.handle_events()
 
-    def set_state(self, state: GameStates) -> Scene:
-        return self.get_scene(state)
+    def set_state(self, state: GameStates):
+        self.__scene = self.__get_scene(state)
+        return self.__scene
 
-    def get_scene(self, state: GameStates):
+    def get_state(self):
+        return self.__state
+
+    def __get_scene(self, state: GameStates):
         if state == GameStates.MAIN_MENU:
             self.__state = GameStates.MAIN_MENU
-            return MainMenuScene()
+            return MainMenuScene(self)
         elif state == GameStates.PLAY:
             self.__state = GameStates.PLAY
-            return PlayScene()
+            return PlayScene(self)
         elif state == GameStates.GAME_OVER:
             self.__state = GameStates.GAME_OVER
-            return GameOverScene()
+            return GameOverScene(self)

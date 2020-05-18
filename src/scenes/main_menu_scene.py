@@ -3,11 +3,14 @@ import pygame
 from src import settings
 from src.entities.crosshair import Crosshair
 from src.scenes.scene import Scene
+from src.states.game_states import GameStates
 
 
 class MainMenuScene(Scene):
 
-    def __init__(self):
+    def __init__(self, gsm):
+        super().__init__(gsm)
+
         # Crosshair
         self.__crosshair = Crosshair(settings.SCREEN_WIDTH / 2,
                                      settings.SCREEN_HEIGHT / 2,
@@ -72,6 +75,14 @@ class MainMenuScene(Scene):
         self.__button_rect = self.__button_image.get_rect(topleft=self.__button_pos)
         self.__button_text_rect = self.__button_text.get_rect(center=self.__button_text_pos)
 
+        # Effects
+        self.__ignore_mouse_clicks = False
+        self.__transition = False
+        self.__close_effect = pygame.Surface((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
+        self.__close_effect_alpha = 0
+        self.__close_effect.set_alpha(self.__close_effect_alpha)
+        self.__close_effect.fill((10, 10, 10))
+
     def draw(self, screen):
         screen.blit(self.__icon_bg, self.__icon_bg_pos)
         screen.blit(self.__player_image, self.__player_image_pos)
@@ -79,6 +90,8 @@ class MainMenuScene(Scene):
         screen.blit(self.__button_image, self.__button_pos)
         screen.blit(self.__button_text, self.__button_text_pos)
         self.__crosshair.draw(screen)
+        if self.__transition:
+            screen.blit(self.__close_effect, (0, 0))
 
     def update(self, dt):
         self.__player_frame += 0.15
@@ -86,21 +99,39 @@ class MainMenuScene(Scene):
             self.__player_frame = 0
         self.__player_image = self.__player_anim[int(self.__player_frame)]
         self.__crosshair.update()
+        if self.__transition:
+            self.__close_effect_alpha += 10
+            self.__close_effect.set_alpha(self.__close_effect_alpha)
+            if self.__close_effect_alpha > 255 + 300:
+                self._gsm.set_state(GameStates.PLAY)
 
     def handle_events(self):
-        press = pygame.mouse.get_pressed()
-        mouse_pos = pygame.mouse.get_pos()
-        if press[0]:
-            collude_button = self.__button_rect.collidepoint(mouse_pos) or \
-                             self.__button_text_rect.collidepoint(mouse_pos)
-            if collude_button and not self.__button_pressed:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE] == 1:
+            if not self.__button_pressed:
+                self.__ignore_mouse_clicks = True
                 self.__button_image = self.__button_press_img
                 self.__button_pressed = True
                 self.__button_text_pos = (self.__button_pos[0] + self.__button_text.get_width() / 2 - 22,
                                           self.__button_pos[1] + 10)
-        else:
-            if self.__button_pressed:
-                self.__button_image = self.__button_rel_img
-                self.__button_pressed = False
-                self.__button_text_pos = (self.__button_pos[0] + self.__button_text.get_width() / 2 - 22,
-                                          self.__button_pos[1] + 5)
+                self.__transition = True
+
+        if not self.__ignore_mouse_clicks:
+            press = pygame.mouse.get_pressed()
+            mouse_pos = pygame.mouse.get_pos()
+            collude_button = self.__button_rect.collidepoint(mouse_pos) or \
+                             self.__button_text_rect.collidepoint(mouse_pos)
+            if press[0]:
+                if collude_button and not self.__button_pressed:
+                    self.__button_image = self.__button_press_img
+                    self.__button_pressed = True
+                    self.__button_text_pos = (self.__button_pos[0] + self.__button_text.get_width() / 2 - 22,
+                                              self.__button_pos[1] + 10)
+            else:
+                if self.__button_pressed:
+                    self.__button_image = self.__button_rel_img
+                    self.__button_pressed = False
+                    self.__button_text_pos = (self.__button_pos[0] + self.__button_text.get_width() / 2 - 22,
+                                              self.__button_pos[1] + 5)
+                    if collude_button:
+                        self.__transition = True

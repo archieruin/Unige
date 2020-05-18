@@ -1,4 +1,7 @@
+import pygame
+
 from .entity import Entity
+from .. import settings
 
 
 class Player(Entity):
@@ -6,7 +9,7 @@ class Player(Entity):
     def __init__(self, x, y, width, height, speed=5, player_res=None):
         super().__init__(x, y, width, height)
         self.__speed = speed
-        self.__player_res = player_res
+        self.__player_res = settings.player_res
 
         self.watch_left = False
         self.watch_right = True
@@ -54,6 +57,53 @@ class Player(Entity):
 
     def draw(self, screen):
         screen.blit(self.__image, (self.get_center()[0], self.get_center()[1]))
+
+    def handle_events(self, crosshair):
+        keys = pygame.key.get_pressed()
+        self.__update_player_watching(crosshair)
+        self.__update_player_moving(keys)
+
+    def __update_player_watching(self, crosshair):
+        mouse_x = crosshair.get_center()[0]
+        player_x = self.get_center()[0]
+
+        if mouse_x > player_x:
+            self.watch_right = True
+            self.watch_left = False
+        if mouse_x < player_x:
+            self.watch_left = True
+            self.watch_right = False
+
+    def __update_player_moving(self, keys):
+        player_x = self.get_pos()[0]
+        player_y = self.get_pos()[1]
+        player_width = self.get_width()
+        player_height = self.get_height()
+
+        if keys[pygame.K_w]:
+            self.move_top = True
+            self.move_down = False
+            self.idle = False
+        elif keys[pygame.K_s]:
+            self.move_down = True
+            self.move_top = False
+        else:
+            self.idle = True
+            self.move_down = False
+            self.move_top = False
+
+        if keys[pygame.K_a]:
+            self.move_left = True
+            self.move_right = False
+            self.idle = False
+        elif keys[pygame.K_d]:
+            self.move_right = True
+            self.move_left = False
+            self.idle = False
+        else:
+            self.idle = True
+            self.move_right = False
+            self.move_left = False
 
     def __watch(self):
         if self.watch_left:

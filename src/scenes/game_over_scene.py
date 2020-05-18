@@ -3,8 +3,8 @@ from src.scenes.scene import Scene
 
 class GameOverScene(Scene):
 
-    def __init__(self):
-        pass
+    def __init__(self, gsm):
+        super().__init__(gsm)
 
     def draw(self, screen):
         pass
