@@ -1,8 +1,8 @@
 import pygame
 
-from src import settings
-from src.states.game_manager import GameStatesManager
-from src.states.game_states import GameStates
+from game import settings
+from game.states.game_manager import GameStatesManager
+from game.states.game_states import GameStates
 
 
 class Game:
@@ -48,7 +48,6 @@ class Game:
                 pygame.quit()
                 quit()
         self.game_states_manager.handle_events(events)
-
 
 
 if __name__ == '__main__':

@@ -6,10 +6,14 @@ from .. import settings
 
 class Player(Entity):
     
-    def __init__(self, x, y, width, height, speed=5, player_res=None):
+    def __init__(self, x, y, width, height, speed=5):
         super().__init__(x, y, width, height)
-        self.__speed = speed
         self.__player_res = settings.player_res
+        self.__speed = speed
+        self.__dx = 0
+        self.__dy = 0
+        self.__vx = 0
+        self.__vy = 0
 
         self.watch_left = False
         self.watch_right = True
@@ -42,12 +46,18 @@ class Player(Entity):
         self.__frame = 0
         self.__image = self.__anim[int(self.__frame)]
 
-    def update(self):
+    def draw(self, screen):
+        screen.blit(self.__image, (self.get_center()[0], self.get_center()[1]))
+
+    def update(self, dt):
         self.__frame += 0.2
         if self.__frame >= len(self.__anim):
             self.__frame = 0
 
-        self.__move()
+        self.__vx = self.__dx * self.__speed
+        self.__vy = self.__dy * self.__speed
+        self._x += self.__vx
+        self._y += self.__vy
         self.__watch()
 
         if not self.move_top and not self.move_down and not self.move_left and not self.move_right:
@@ -55,15 +65,14 @@ class Player(Entity):
         else:
             self.__anim = self.__move_anim
 
-    def draw(self, screen):
-        screen.blit(self.__image, (self.get_center()[0], self.get_center()[1]))
+    def __watch(self):
+        if self.watch_left:
+            self.__image = self.h_flip(self.__anim[int(self.__frame)])
+        else:
+            self.__image = self.__anim[int(self.__frame)]
 
-    def handle_events(self, crosshair):
+    def handle_events(self, events, crosshair):
         keys = pygame.key.get_pressed()
-        self.__update_player_watching(crosshair)
-        self.__update_player_moving(keys)
-
-    def __update_player_watching(self, crosshair):
         mouse_x = crosshair.get_center()[0]
         player_x = self.get_center()[0]
 
@@ -74,52 +83,34 @@ class Player(Entity):
             self.watch_left = True
             self.watch_right = False
 
-    def __update_player_moving(self, keys):
-        player_x = self.get_pos()[0]
-        player_y = self.get_pos()[1]
-        player_width = self.get_width()
-        player_height = self.get_height()
-
         if keys[pygame.K_w]:
+            self.__dy = -1
             self.move_top = True
             self.move_down = False
             self.idle = False
         elif keys[pygame.K_s]:
+            self.__dy = 1
             self.move_down = True
             self.move_top = False
+            self.idle = False
         else:
+            self.__dy = 0
             self.idle = True
             self.move_down = False
             self.move_top = False
 
         if keys[pygame.K_a]:
+            self.__dx = -1
             self.move_left = True
             self.move_right = False
             self.idle = False
         elif keys[pygame.K_d]:
+            self.__dx = 1
             self.move_right = True
             self.move_left = False
             self.idle = False
         else:
+            self.__dx = 0
             self.idle = True
             self.move_right = False
             self.move_left = False
-
-    def __watch(self):
-        if self.watch_left:
-            self.__image = self.h_flip(self.__anim[int(self.__frame)])
-        else:
-            self.__image = self.__anim[int(self.__frame)]
-
-    def __move(self):
-        if self.move_top:
-            self._y -= self.__speed
-
-        elif self.move_down:
-            self._y += self.__speed
-
-        if self.move_left:
-            self._x -= self.__speed
-
-        elif self.move_right:
-            self._x += self.__speed

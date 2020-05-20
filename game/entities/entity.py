@@ -12,11 +12,11 @@ class Entity(ABC):
         self._height = height
 
     @abstractmethod
-    def update(self):
+    def draw(self, screen):
         raise NotImplementedError
 
     @abstractmethod
-    def draw(self, screen):
+    def update(self, dt):
         raise NotImplementedError
 
     def get_pos(self):

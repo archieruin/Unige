@@ -1,9 +1,9 @@
 import pygame
 
-from src import settings
-from src.entities.crosshair import Crosshair
-from src.scenes.scene import Scene
-from src.states.game_states import GameStates
+from game import settings
+from game.entities.crosshair import Crosshair
+from game.scenes.scene import Scene
+from game.states.game_states import GameStates
 
 
 class MainMenuScene(Scene):
@@ -98,7 +98,7 @@ class MainMenuScene(Scene):
         if self.__player_frame >= len(self.__player_anim):
             self.__player_frame = 0
         self.__player_image = self.__player_anim[int(self.__player_frame)]
-        self.__crosshair.update()
+        self.__crosshair.update(dt)
         if self.__transition:
             self.__close_effect_alpha += 10
             self.__close_effect.set_alpha(self.__close_effect_alpha)

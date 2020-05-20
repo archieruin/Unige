@@ -1,8 +1,8 @@
-from src.scenes.game_over_scene import GameOverScene
-from src.scenes.main_menu_scene import MainMenuScene
-from src.scenes.play_scene import PlayScene
-from src.scenes.scene import Scene
-from src.states.game_states import GameStates
+from game.scenes.game_over import GameOverScene
+from game.scenes.main_menu import MainMenuScene
+from game.scenes.play import PlayScene
+from game.scenes.scene import Scene
+from game.states.game_states import GameStates
 
 
 class GameStatesManager:

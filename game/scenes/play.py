@@ -1,9 +1,12 @@
+import random
+
 import pygame
 
-from src import settings
-from src.entities.crosshair import Crosshair
-from src.entities.player import Player
-from src.scenes.scene import Scene
+from game import settings
+from game.entities.crosshair import Crosshair
+from game.entities.player import Player
+from game.entities.slime import Slime
+from game.scenes.scene import Scene
 
 
 class PlayScene(Scene):
@@ -20,6 +23,16 @@ class PlayScene(Scene):
         # Player
         self.__player = Player(50, 50, 64, 64)
 
+        # Slimes
+        slime_size = 48
+        self.__slimes_count = 5
+        self.__slimes = []
+        for i in range(self.__slimes_count):
+            rand_x = random.randint(slime_size, settings.SCREEN_WIDTH - slime_size)
+            rand_y = random.randint(slime_size, settings.SCREEN_HEIGHT - slime_size)
+            rand_speed = random.randint(1, 4) * (random.randint(5, 10) * 0.1)
+            self.__slimes.append(Slime(rand_x, rand_y, slime_size, slime_size, rand_speed))
+
         # Pause
         self.__pressed_pause = False
         self.__pause = False
@@ -29,6 +42,8 @@ class PlayScene(Scene):
         self.__pause_effect.fill((0, 0, 0))
 
     def draw(self, screen):
+        for slime in self.__slimes:
+            slime.draw(screen)
         self.__player.draw(screen)
         self.__crosshair.draw(screen)
         if self.__pause:
@@ -36,8 +51,11 @@ class PlayScene(Scene):
 
     def update(self, dt):
         if not self.__pause:
-            self.__player.update()
-        self.__crosshair.update()
+            for slime in self.__slimes:
+                slime.update(dt)
+                slime.move_to_player(self.__player.get_center())
+            self.__player.update(dt)
+        self.__crosshair.update(dt)
 
         if self.__pause and self.__pause_effect_alpha <= 128:
             self.__pause_effect_alpha += 5
@@ -45,7 +63,7 @@ class PlayScene(Scene):
 
     def handle_events(self, events):
         if not self.__pause:
-            self.__player.handle_events(self.__crosshair)
+            self.__player.handle_events(events, self.__crosshair)
 
         for event in events:
             if event.type == pygame.KEYUP:
@@ -55,5 +73,3 @@ class PlayScene(Scene):
                         self.__pause_effect_alpha = 0
                     else:
                         self.__pause = True
-
-
