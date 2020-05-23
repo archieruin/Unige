@@ -21,17 +21,30 @@ class PlayScene(Scene):
                                      'crosshair.png')
 
         # Player
-        self.__player = Player(50, 50, 64, 64)
+        self.__player = Player(settings.SCREEN_WIDTH / 2 - 32, settings.SCREEN_HEIGHT / 2 - 32, 64, 64, 6)
 
         # Slimes
         slime_size = 48
-        self.__slimes_count = 5
+        self.__slimes_count = 50
         self.__slimes = []
         for i in range(self.__slimes_count):
-            rand_x = random.randint(slime_size, settings.SCREEN_WIDTH - slime_size)
-            rand_y = random.randint(slime_size, settings.SCREEN_HEIGHT - slime_size)
-            rand_speed = random.randint(1, 4) * (random.randint(5, 10) * 0.1)
-            self.__slimes.append(Slime(rand_x, rand_y, slime_size, slime_size, rand_speed))
+            pos_choices = 'top', 'down', 'left', 'right'
+            pos_choice = random.choice(pos_choices)
+            rand_x = 0
+            rand_y = 0
+            if pos_choice == 'top':
+                rand_x = random.randint(-slime_size, settings.SCREEN_WIDTH - slime_size)
+                rand_y = -slime_size
+            elif pos_choice == 'down':
+                rand_x = random.randint(-slime_size, settings.SCREEN_WIDTH - slime_size)
+                rand_y = -slime_size + settings.SCREEN_HEIGHT
+            elif pos_choice == 'left':
+                rand_x = -slime_size
+                rand_y = random.randint(-slime_size, settings.SCREEN_HEIGHT + slime_size)
+            elif pos_choice == 'right':
+                rand_x = -slime_size + settings.SCREEN_WIDTH
+                rand_y = random.randint(-slime_size, settings.SCREEN_HEIGHT + slime_size)
+            self.__slimes.append(Slime(rand_x, rand_y, slime_size, slime_size, 2))
 
         # Pause
         self.__pressed_pause = False
@@ -51,10 +64,12 @@ class PlayScene(Scene):
 
     def update(self, dt):
         if not self.__pause:
+            self.__player.update(dt)
             for slime in self.__slimes:
                 slime.update(dt)
-                slime.move_to_player(self.__player.get_center())
-            self.__player.update(dt)
+                slime.move_to_player(self.__player.get_pos())
+                if self.__player.colliderect(slime.get_rect()):
+                    self.__player.take_damage(slime.get_pos(), 1)
         self.__crosshair.update(dt)
 
         if self.__pause and self.__pause_effect_alpha <= 128:

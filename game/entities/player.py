@@ -1,3 +1,5 @@
+from math import sqrt
+
 import pygame
 
 from .entity import Entity
@@ -6,14 +8,18 @@ from .. import settings
 
 class Player(Entity):
     
-    def __init__(self, x, y, width, height, speed=5):
+    def __init__(self, x, y, width, height, speed=5, health=10):
         super().__init__(x, y, width, height)
         self.__player_res = settings.player_res
         self.__speed = speed
+        self.__health = health
+        self.__hit_countdown = 0
         self.__dx = 0
         self.__dy = 0
         self.__vx = 0
         self.__vy = 0
+
+        self.__got_damage = False
 
         self.watch_left = False
         self.watch_right = True
@@ -42,34 +48,76 @@ class Player(Entity):
             self.scale(self.load(str(self.__player_res / 'knight_run_anim_f5.png')), width, height)
         ]
 
+        self.__damage_image = self.scale(
+            self.load(str(self.__player_res / 'knight_got_damage.png')), width, height)
+
         self.__anim = self.__idle_anim
         self.__frame = 0
         self.__image = self.__anim[int(self.__frame)]
+        self.__original_image = self.__image
+        self.__rect = self.__image.get_rect(topleft=self.get_pos())
 
     def draw(self, screen):
-        screen.blit(self.__image, (self.get_center()[0], self.get_center()[1]))
+        screen.blit(self.__image, (self._x, self._y))
+        # pygame.draw.rect(screen, (255, 0, 0), self.__rect)
 
     def update(self, dt):
         self.__frame += 0.2
         if self.__frame >= len(self.__anim):
             self.__frame = 0
 
-        self.__vx = self.__dx * self.__speed
-        self.__vy = self.__dy * self.__speed
+        if self.watch_left:
+            self.__image = self.h_flip(self.__anim[int(self.__frame)])
+        else:
+            self.__image = self.__anim[int(self.__frame)]
+        self.__original_image = self.__image
+        self.__rect = self.__image.get_rect(topleft=self.get_pos())
+
+        if self.__hit_countdown:
+            if self.__hit_countdown % 2:
+                self.__image = self.__damage_image
+            else:
+                self.__image = self.__original_image
+            self.__hit_countdown = max(0, self.__hit_countdown - 1)
+        else:
+            self.__vx = self.__dx * self.__speed
+            self.__vy = self.__dy * self.__speed
+        print(self.__hit_countdown)
+        print(self.__got_damage)
+
         self._x += self.__vx
         self._y += self.__vy
-        self.__watch()
 
         if not self.move_top and not self.move_down and not self.move_left and not self.move_right:
             self.__anim = self.__idle_anim
         else:
             self.__anim = self.__move_anim
 
-    def __watch(self):
-        if self.watch_left:
-            self.__image = self.h_flip(self.__anim[int(self.__frame)])
-        else:
-            self.__image = self.__anim[int(self.__frame)]
+    def take_damage(self, enemy_pos, damage):
+        self.__got_damage = True
+        self.__health -= damage
+        self.__hit_countdown = 15
+        self_pos = self.get_pos()
+        dir_x = self_pos[0] - enemy_pos[0]
+        dir_y = self_pos[1] - enemy_pos[1]
+        dir_len = sqrt(pow(dir_x, 2) + pow(dir_y, 2))
+        dir_x = dir_x / dir_len
+        dir_y = dir_y / dir_len
+        self.__vx = dir_x * 5
+        self.__vy = dir_y * 5
+
+    def get_rect(self):
+        return self.__rect
+
+    def collidepoint(self, point):
+        if self.__rect.collidepoint(point):
+            return True
+        return False
+
+    def colliderect(self, rect):
+        if self.__rect.colliderect(rect):
+            return True
+        return False
 
     def handle_events(self, events, crosshair):
         keys = pygame.key.get_pressed()
