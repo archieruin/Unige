@@ -8,6 +8,8 @@ class Entity(ABC):
     def __init__(self, x, y, width, height):
         self._x = x
         self._y = y
+        self._vx = 0
+        self._vy = 0
         self._width = width
         self._height = height
 

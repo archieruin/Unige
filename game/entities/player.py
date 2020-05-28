@@ -1,25 +1,27 @@
 from math import sqrt
 
 import pygame
+from pygame.sprite import Sprite
 
 from .entity import Entity
 from .. import settings
 
 
-class Player(Entity):
+class Player(Entity, Sprite):
     
-    def __init__(self, x, y, width, height, speed=5, health=10):
+    def __init__(self, x, y, width, height, speed=5, health=50):
         super().__init__(x, y, width, height)
+        Sprite.__init__(self)
+
         self.__player_res = settings.player_res
-        self.__speed = speed
+
         self.__health = health
         self.__hit_countdown = 0
+        self.__last_damage_ticks = 0
+
+        self.__speed = speed
         self.__dx = 0
         self.__dy = 0
-        self.__vx = 0
-        self.__vy = 0
-
-        self.__got_damage = False
 
         self.watch_left = False
         self.watch_right = True
@@ -53,13 +55,12 @@ class Player(Entity):
 
         self.__anim = self.__idle_anim
         self.__frame = 0
-        self.__image = self.__anim[int(self.__frame)]
-        self.__original_image = self.__image
-        self.__rect = self.__image.get_rect(topleft=self.get_pos())
+        self.image = self.__anim[int(self.__frame)]
+        self.rect = self.image.get_rect(topleft=self.get_pos())
+        self.__original_image = self.image
 
     def draw(self, screen):
-        screen.blit(self.__image, (self._x, self._y))
-        # pygame.draw.rect(screen, (255, 0, 0), self.__rect)
+        screen.blit(self.image, (self._x, self._y))
 
     def update(self, dt):
         self.__frame += 0.2
@@ -67,26 +68,25 @@ class Player(Entity):
             self.__frame = 0
 
         if self.watch_left:
-            self.__image = self.h_flip(self.__anim[int(self.__frame)])
+            self.image = self.h_flip(self.__anim[int(self.__frame)])
         else:
-            self.__image = self.__anim[int(self.__frame)]
-        self.__original_image = self.__image
-        self.__rect = self.__image.get_rect(topleft=self.get_pos())
+            self.image = self.__anim[int(self.__frame)]
+
+        self.__original_image = self.image
+        self.rect = self.image.get_rect(topleft=self.get_pos())
 
         if self.__hit_countdown:
-            if self.__hit_countdown % 2:
-                self.__image = self.__damage_image
+            if self.__hit_countdown:
+                self.image = self.__damage_image
             else:
-                self.__image = self.__original_image
+                self.image = self.__original_image
             self.__hit_countdown = max(0, self.__hit_countdown - 1)
         else:
-            self.__vx = self.__dx * self.__speed
-            self.__vy = self.__dy * self.__speed
-        print(self.__hit_countdown)
-        print(self.__got_damage)
+            self._vx = self.__dx * self.__speed
+            self._vy = self.__dy * self.__speed
 
-        self._x += self.__vx
-        self._y += self.__vy
+        self._x += self._vx
+        self._y += self._vy
 
         if not self.move_top and not self.move_down and not self.move_left and not self.move_right:
             self.__anim = self.__idle_anim
@@ -94,28 +94,30 @@ class Player(Entity):
             self.__anim = self.__move_anim
 
     def take_damage(self, enemy_pos, damage):
-        self.__got_damage = True
-        self.__health -= damage
-        self.__hit_countdown = 15
+        seconds_passed = (pygame.time.get_ticks() - self.__last_damage_ticks) / 1000
+        if seconds_passed > 0.1:
+            self.__health -= damage
+            self.__last_damage_ticks = pygame.time.get_ticks()
+        self.__hit_countdown = 5
         self_pos = self.get_pos()
         dir_x = self_pos[0] - enemy_pos[0]
         dir_y = self_pos[1] - enemy_pos[1]
         dir_len = sqrt(pow(dir_x, 2) + pow(dir_y, 2))
         dir_x = dir_x / dir_len
         dir_y = dir_y / dir_len
-        self.__vx = dir_x * 5
-        self.__vy = dir_y * 5
+        self._vx += dir_x
+        self._vy += dir_y
 
     def get_rect(self):
-        return self.__rect
+        return self.rect
 
     def collidepoint(self, point):
-        if self.__rect.collidepoint(point):
+        if self.rect.collidepoint(point):
             return True
         return False
 
     def colliderect(self, rect):
-        if self.__rect.colliderect(rect):
+        if self.rect.colliderect(rect):
             return True
         return False
 
