@@ -5,5 +5,5 @@ Top-Down Action Game
 cd path/to/Unige
 pipenv --install
 pipenv shell
-python3 src/game.py
+python -m src.game
 ```
