@@ -48,7 +48,7 @@ class PlayScene(Scene):
 
         # Slimes
         slime_size = 48
-        self.__slimes_count = 2
+        self.__slimes_count = 50
         for i in range(self.__slimes_count):
             pos_choices = 'top', 'down', 'left', 'right'
             pos_choice = random.choice(pos_choices)
@@ -72,6 +72,9 @@ class PlayScene(Scene):
     def draw(self, screen):
         self.__enemies_group.draw(screen)
         self.__player_group.draw(screen)
+        self.__bullets_group.draw(screen)
+
+        # UI
         screen.blit(self.__player_health, (10, 10))
 
         if self.__pause:
@@ -93,6 +96,11 @@ class PlayScene(Scene):
                 if self.__player.colliderect(enemy.get_rect()):
                     self.__player.take_damage(enemy.get_pos(), 1)
 
+                for bullet in self.__bullets_group.sprites():
+                    if bullet.colliderect(enemy.get_rect()):
+                        sub_health
+
+            self.__bullets_group.update(dt)
             self.__player_group.update(dt)
             self.__enemies_group.update(dt)
 
@@ -121,8 +129,9 @@ class PlayScene(Scene):
                         self.__pause = True
 
             if event.type == pygame.MOUSEBUTTONUP:
-                player_x = self.__player.get_pos()[0]
-                player_y = self.__player.get_pos()[1]
+                player_x = self.__player.get_center()[0]
+                player_y = self.__player.get_center()[1]
                 mouse_pos = pygame.mouse.get_pos()
-                bullet = Bullet(player_x, player_y, 16, (255, 0, 0), mouse_pos, speed=10)
+                direction = (player_x - mouse_pos[0], player_y - mouse_pos[1])
+                bullet = Bullet(player_x, player_y, 16, (255, 0, 0), direction, speed=10)
                 self.__bullets_group.add(bullet)

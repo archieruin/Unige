@@ -42,7 +42,7 @@ class Entity(ABC):
         self._height = height
 
     def get_center(self):
-        return self._x - self._width / 2, self._y - self._height / 2
+        return self._x + self._width / 2, self._y + self._height / 2
 
     @staticmethod
     def normalize_vector2(vec2):

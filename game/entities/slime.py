@@ -68,6 +68,21 @@ class Slime(Entity, Sprite):
         self._vx += dir_x * 3
         self._vy += dir_y * 3
 
+    def take_damage(self):
+        pass  # TODO
+
+    def get_health(self):
+        return self.__health
+
+    def set_health(self, health):
+        self.__health = health
+
+    def sub_health(self, health):
+        self.__health -= health
+
+    def add_health(self, health):
+        self.__health += health
+
     def collidepoint(self, point):
         if self.rect.collidepoint(point):
             return True

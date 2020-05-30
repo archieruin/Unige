@@ -20,6 +20,7 @@ class Player(Entity, Sprite):
         self.__last_damage_ticks = 0
 
         self.__speed = speed
+        self.__max_vel = speed * 2
         self.__dx = 0
         self.__dy = 0
 
@@ -103,8 +104,9 @@ class Player(Entity, Sprite):
         dir_x = pos[0] - enemy_pos[0]
         dir_y = pos[1] - enemy_pos[1]
         dir_x, dir_y = self.normalize_vector2((dir_x, dir_y))
-        self._vx += dir_x * 5
-        self._vy += dir_y * 5
+        if self._vx < self.__max_vel and self._vy < self.__max_vel:
+            self._vx += dir_x * 5
+            self._vy += dir_y * 5
 
     def get_rect(self):
         return self.rect
@@ -118,12 +120,6 @@ class Player(Entity, Sprite):
         if self.rect.colliderect(rect):
             return True
         return False
-
-    def get_health(self):
-        return self.__health
-
-    def set_health(self, health):
-        self.__health = health
 
     def handle_events(self, events, crosshair):
         keys = pygame.key.get_pressed()
