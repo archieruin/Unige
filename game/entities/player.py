@@ -99,14 +99,14 @@ class Player(Entity, Sprite):
             self.__health -= damage
             self.__last_damage_ticks = pygame.time.get_ticks()
         self.__hit_countdown = 5
-        self_pos = self.get_pos()
-        dir_x = self_pos[0] - enemy_pos[0]
-        dir_y = self_pos[1] - enemy_pos[1]
+        pos = self.get_pos()
+        dir_x = pos[0] - enemy_pos[0]
+        dir_y = pos[1] - enemy_pos[1]
         dir_len = sqrt(pow(dir_x, 2) + pow(dir_y, 2))
         dir_x = dir_x / dir_len
         dir_y = dir_y / dir_len
-        self._vx += dir_x
-        self._vy += dir_y
+        self._vx += dir_x * 5
+        self._vy += dir_y * 5
 
     def get_rect(self):
         return self.rect
@@ -120,6 +120,12 @@ class Player(Entity, Sprite):
         if self.rect.colliderect(rect):
             return True
         return False
+
+    def get_health(self):
+        return self.__health
+
+    def set_health(self, health):
+        self.__health = health
 
     def handle_events(self, events, crosshair):
         keys = pygame.key.get_pressed()

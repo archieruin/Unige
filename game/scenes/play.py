@@ -38,6 +38,12 @@ class PlayScene(Scene):
         self.__player = Player(settings.SCREEN_WIDTH / 2 - 32, settings.SCREEN_HEIGHT / 2 - 32, 64, 64, 6)
         self.__player_group.add(self.__player)
 
+        # Font
+        font_path = str(settings.fonts_res / 'Arcade Classic.ttf')
+        self.__health_font = pygame.font.Font(font_path, 32)
+        health_text = "HP %d" % self.__player.get_health()
+        self.__player_health = self.__health_font.render(health_text, True, (180, 200, 210))
+
         # Slimes
         slime_size = 48
         self.__slimes_count = 2
@@ -64,6 +70,7 @@ class PlayScene(Scene):
     def draw(self, screen):
         self.__enemies_group.draw(screen)
         self.__player_group.draw(screen)
+        screen.blit(self.__player_health, (10, 10))
 
         if self.__pause:
             screen.blit(self.__pause_effect, (0, 0))
@@ -86,6 +93,9 @@ class PlayScene(Scene):
 
             self.__player_group.update(dt)
             self.__enemies_group.update(dt)
+
+            health_text = "HP %d" % self.__player.get_health()
+            self.__player_health = self.__health_font.render(health_text, True, (180, 200, 210))
         else:
             # Pause Effect
             if self.__pause_effect_alpha <= 128:

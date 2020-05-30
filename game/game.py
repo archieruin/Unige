@@ -11,7 +11,7 @@ class Game:
     def __init__(self):
         pygame.init()
         pygame.mouse.set_visible(False)
-        self.screen_clear_color = (52, 50, 50)
+        self.screen_clear_color = (42, 40, 40)
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
 
@@ -20,7 +20,7 @@ class Game:
         pygame.display.set_icon(game_icon)
 
         # Inti game states manager
-        self.game_states_manager = GameStatesManager(GameStates.MAIN_MENU)
+        self.__game_states_manager = GameStatesManager(GameStates.MAIN_MENU)
         self.__pause = False
 
         # Run game loop
@@ -35,19 +35,21 @@ class Game:
     def draw(self):
         pygame.display.update()
         self.screen.fill(self.screen_clear_color)
-        self.game_states_manager.draw(self.screen)
+        self.__game_states_manager.draw(self.screen)
 
     def update(self, dt):
         self.handle_events()
-        self.game_states_manager.update(dt)
+        self.__game_states_manager.update(dt)
 
     def handle_events(self):
         events = pygame.event.get()
+        
         for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-        self.game_states_manager.handle_events(events)
+
+        self.__game_states_manager.handle_events(events)
 
 
 if __name__ == '__main__':

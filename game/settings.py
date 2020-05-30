@@ -2,7 +2,7 @@ from pathlib import Path
 
 GAME_TITLE = 'Unige'
 FPS = 60
-SCREEN_WIDTH = 840
+SCREEN_WIDTH = 932
 SCREEN_HEIGHT = 650
 
 root_dir = Path.cwd()
