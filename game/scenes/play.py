@@ -4,6 +4,7 @@ import pygame
 from pygame.sprite import Group
 
 from game import settings
+from game.entities.bullet import Bullet
 from game.entities.crosshair import Crosshair
 from game.entities.player import Player
 from game.entities.slime import Slime
@@ -33,6 +34,7 @@ class PlayScene(Scene):
         # Groups
         self.__player_group = Group()
         self.__enemies_group = Group()
+        self.__bullets_group = Group()
 
         # Player
         self.__player = Player(settings.SCREEN_WIDTH / 2 - 32, settings.SCREEN_HEIGHT / 2 - 32, 64, 64, 6)
@@ -80,20 +82,21 @@ class PlayScene(Scene):
     def update(self, dt):
         if not self.__pause:
             # Update Groups
-            for sprite in self.__enemies_group.sprites():
-                sprite.move_to_player(self.__player.get_pos())
+            for enemy in self.__enemies_group.sprites():
+                enemy.move_to_player(self.__player.get_pos())
 
-                for other_sprite in self.__enemies_group.sprites():
-                    if sprite.colliderect(other_sprite.get_rect()):
-                        sprite.throw(other_sprite.get_pos())
+                for other_enemy in self.__enemies_group.sprites():
+                    if enemy.colliderect(other_enemy.get_rect()):
+                        enemy.throw(other_enemy.get_pos())
 
                 # Check collides between slimes and player
-                if self.__player.colliderect(sprite.get_rect()):
-                    self.__player.take_damage(sprite.get_pos(), 1)
+                if self.__player.colliderect(enemy.get_rect()):
+                    self.__player.take_damage(enemy.get_pos(), 1)
 
             self.__player_group.update(dt)
             self.__enemies_group.update(dt)
 
+            # Draw player health points
             health_text = "HP %d" % self.__player.get_health()
             self.__player_health = self.__health_font.render(health_text, True, (180, 200, 210))
         else:
@@ -116,3 +119,10 @@ class PlayScene(Scene):
                         self.__pause_effect_alpha = 0
                     else:
                         self.__pause = True
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                player_x = self.__player.get_pos()[0]
+                player_y = self.__player.get_pos()[1]
+                mouse_pos = pygame.mouse.get_pos()
+                bullet = Bullet(player_x, player_y, 16, (255, 0, 0), mouse_pos, speed=10)
+                self.__bullets_group.add(bullet)

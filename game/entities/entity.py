@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from math import sqrt
 
 import pygame
 
@@ -42,6 +43,13 @@ class Entity(ABC):
 
     def get_center(self):
         return self._x - self._width / 2, self._y - self._height / 2
+
+    @staticmethod
+    def normalize_vector2(vec2):
+        dir_len = sqrt(pow(vec2[0], 2) + pow(vec2[1], 2))
+        dir_x = vec2[0] / dir_len
+        dir_y = vec2[1] / dir_len
+        return dir_x, dir_y
 
     @staticmethod
     def load(path):

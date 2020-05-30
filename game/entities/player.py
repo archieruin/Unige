@@ -102,9 +102,7 @@ class Player(Entity, Sprite):
         pos = self.get_pos()
         dir_x = pos[0] - enemy_pos[0]
         dir_y = pos[1] - enemy_pos[1]
-        dir_len = sqrt(pow(dir_x, 2) + pow(dir_y, 2))
-        dir_x = dir_x / dir_len
-        dir_y = dir_y / dir_len
+        dir_x, dir_y = self.normalize_vector2((dir_x, dir_y))
         self._vx += dir_x * 5
         self._vy += dir_y * 5
 
