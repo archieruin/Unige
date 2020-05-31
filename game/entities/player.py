@@ -9,7 +9,7 @@ from .. import settings
 
 class Player(Entity, Sprite):
     
-    def __init__(self, x, y, width, height, speed=5, health=50):
+    def __init__(self, x, y, width, height, speed=5, health=10):
         super().__init__(x, y, width, height)
         Sprite.__init__(self)
 
@@ -105,8 +105,8 @@ class Player(Entity, Sprite):
         dir_y = pos[1] - enemy_pos[1]
         dir_x, dir_y = self.normalize_vector2((dir_x, dir_y))
         if self._vx < self.__max_vel and self._vy < self.__max_vel:
-            self._vx += dir_x * 5
-            self._vy += dir_y * 5
+            self._vx += dir_x * 2
+            self._vy += dir_y * 2
 
     def get_rect(self):
         return self.rect
@@ -164,3 +164,15 @@ class Player(Entity, Sprite):
             self.idle = True
             self.move_right = False
             self.move_left = False
+
+    def get_health(self):
+        return self.__health
+
+    def set_health(self, health):
+        self.__health = health
+
+    def sub_health(self, health):
+        self.__health -= health
+
+    def add_health(self, health):
+        self.__health += health

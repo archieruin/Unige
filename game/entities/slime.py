@@ -16,8 +16,10 @@ class Slime(Entity, Sprite):
 
         self.__slime_res = settings.slime_res
         self.__speed = speed
+        self.__max_vel = speed * 5
         self.__health = health
-        self.__throw_countdown = 0
+        self.__hit_countdown = 0
+        self.__last_damage_ticks = 0
 
         self.__move_anim = [
             self.scale(self.load(str(self.__slime_res / 'slime_run_anim_f0.png')), width, height),
@@ -47,6 +49,9 @@ class Slime(Entity, Sprite):
         self.image = self.__anim[int(self.__frame)]
         self.rect = self.image.get_rect(topleft=self.get_pos())
 
+        if self.__health <= 0:
+            self.kill()
+
     def move_to_player(self, player_pos):
         self_pos = self.get_pos()
         dir_x = self_pos[0] - player_pos[0]
@@ -57,19 +62,31 @@ class Slime(Entity, Sprite):
         self._vx = -dir_x * self.__speed
         self._vy = -dir_y * self.__speed
 
-    def throw(self, player_pos):
+    def throw(self, from_pos, force):
         self_pos = self.get_pos()
-        dir_x = self_pos[0] - player_pos[0]
-        dir_y = self_pos[1] - player_pos[1]
+        dir_x = self_pos[0] - from_pos[0]
+        dir_y = self_pos[1] - from_pos[1]
         dir_len = sqrt(pow(dir_x, 2) + pow(dir_y, 2))
         if dir_x or dir_y:
             dir_x = dir_x / dir_len
             dir_y = dir_y / dir_len
-        self._vx += dir_x * 3
-        self._vy += dir_y * 3
+        self._vx += dir_x * force
+        self._vy += dir_y * force
 
-    def take_damage(self):
-        pass  # TODO
+    def take_damage(self, from_pos, damage):
+        seconds_passed = (pygame.time.get_ticks() - self.__last_damage_ticks) / 1000
+        if seconds_passed > 0.1:
+            self.__health -= damage
+            self.__last_damage_ticks = pygame.time.get_ticks()
+        self.__hit_countdown = 5
+        pos = self.get_pos()
+        dir_x = pos[0] - from_pos[0]
+        dir_y = pos[1] - from_pos[1]
+        dir_x, dir_y = self.normalize_vector2((dir_x, dir_y))
+        # if self._vx < self.__max_vel and self._vy < self.__max_vel:
+        # self._vx = dir_x * self.__speed
+        # self._vy = dir_y * self.__speed
+        self.throw(from_pos, 40)
 
     def get_health(self):
         return self.__health

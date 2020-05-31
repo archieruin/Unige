@@ -26,6 +26,10 @@ class GameStatesManager:
     def get_state(self):
         return self.__state
 
+    def set_game_over_scene(self, waves):
+        self.__state = GameStates.GAME_OVER
+        self.__scene = GameOverScene(self, waves)
+
     def __get_scene(self, state: GameStates):
         if state == GameStates.MAIN_MENU:
             self.__state = GameStates.MAIN_MENU
@@ -33,6 +37,3 @@ class GameStatesManager:
         elif state == GameStates.PLAY:
             self.__state = GameStates.PLAY
             return PlayScene(self)
-        elif state == GameStates.GAME_OVER:
-            self.__state = GameStates.GAME_OVER
-            return GameOverScene(self)

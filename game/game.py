@@ -1,7 +1,7 @@
 import pygame
 
 from game import settings
-from game.states.game_manager import GameStatesManager
+from game.states.game_states_manager import GameStatesManager
 from game.states.game_states import GameStates
 
 
@@ -21,6 +21,7 @@ class Game:
 
         # Inti game states manager
         self.__game_states_manager = GameStatesManager(GameStates.MAIN_MENU)
+        self.__game_states_manager.set_game_over_scene(5)
         self.__pause = False
 
         # Run game loop
