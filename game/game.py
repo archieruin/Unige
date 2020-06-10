@@ -21,7 +21,6 @@ class Game:
 
         # Inti game states manager
         self.__game_states_manager = GameStatesManager(GameStates.MAIN_MENU)
-        self.__game_states_manager.set_game_over_scene(5)
         self.__pause = False
 
         # Run game loop

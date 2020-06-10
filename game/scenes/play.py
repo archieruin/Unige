@@ -9,7 +9,6 @@ from game.entities.crosshair import Crosshair
 from game.entities.player import Player
 from game.entities.slime import Slime
 from game.scenes.scene import Scene
-from game.states.game_states import GameStates
 
 
 class PlayScene(Scene):

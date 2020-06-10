@@ -10,11 +10,11 @@ class GameStatesManager:
         self.__state = state
         self.__scene = self.set_state(self.__state)
 
-    def update(self, dt):
-        self.__scene.update(dt)
-
     def draw(self, screen):
         self.__scene.draw(screen)
+
+    def update(self, dt):
+        self.__scene.update(dt)
 
     def handle_events(self, events):
         self.__scene.handle_events(events)
